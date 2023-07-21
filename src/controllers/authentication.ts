@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getUserByEmail, createUser } from "../db/users";
+import { getUserByEmail, createUser, updateUserById } from "../db/users";
 import { random, authentication } from "../helpers";
 
 export const register = async (req: express.Request, res: express.Response) => {
@@ -20,6 +20,7 @@ export const register = async (req: express.Request, res: express.Response) => {
       authentication: {
         salt,
         password: authentication(salt, password),
+        sessionToken: "",
       },
     });
 
@@ -54,17 +55,30 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     // update user session token
     const salt = random();
-    user.authentication.sessionToken = authentication(
-      salt,
-      user._id.toString()
-    );
+    const sessionToken = authentication(salt, user._id.toString());
 
-    res.cookie("token", user.authentication.sessionToken, {
+    console.log(sessionToken);
+
+    // const result = await updateUserById(user._id.toString(), {
+    //   sessionToken: sessionToken,
+    // });
+    // const result = await UserModel.updateOne(
+    //   { _id: user._id },
+    //   { $set: { sessionToken: sessionToken } }
+    // );
+
+    user.authentication.sessionToken = sessionToken;
+
+    await user.save();
+
+    // console.log(user);
+
+    res.cookie("token", sessionToken, {
       domain: "localhost",
       path: "/",
     });
 
-    return res.status(100).json(user).end();
+    return res.status(200).json(user).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

@@ -7,6 +7,9 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true, select: false },
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
+    // password: { type: String, required: true },
+    // salt: { type: String },
+    // sessionToken: { type: String },
   },
 });
 
@@ -25,5 +28,6 @@ export const createUser = (values: Record<string, any>) =>
   new UserModel(values).save().then((user) => user.toObject());
 export const deleteUserById = (id: string) =>
   UserModel.findOneAndDelete({ _id: id });
-export const updateUserById = (id: string, values: Record<string, any>) =>
-  UserModel.findByIdAndUpdate(id, values);
+export const updateUserById = (id: string, values: Record<string, any>) => {
+  return UserModel.findByIdAndUpdate(id, values, { new: true });
+};
