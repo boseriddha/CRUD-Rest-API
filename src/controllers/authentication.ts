@@ -57,7 +57,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     const salt = random();
     const sessionToken = authentication(salt, user._id.toString());
 
-    console.log(sessionToken);
+    // console.log(sessionToken);
 
     // const result = await updateUserById(user._id.toString(), {
     //   sessionToken: sessionToken,
